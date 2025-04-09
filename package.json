@@ -1,0 +1,46 @@
+
+{
+  "name": "langchain-code-assistant",
+  "version": "1.0.0",
+  "description": "A TypeScript application using LangChain, ChromaDB and OpenAI for code analysis",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "clean": "rimraf dist chroma-db"
+  },
+  "keywords": [
+    "langchain",
+    "openai",
+    "chromadb",
+    "typescript",
+    "code-analysis"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@langchain/chroma": "^0.1.0",
+    "@langchain/community": "^0.0.26",
+    "@langchain/core": "^0.1.20",
+    "@langchain/openai": "^0.0.13",
+    "chromadb": "^1.7.5",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "fs-extra": "^11.1.1",
+    "glob": "^10.3.10",
+    "langchain": "^0.1.7",
+    "socket.io": "^4.7.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.10.4",
+    "nodemon": "^3.0.2",
+    "rimraf": "^5.0.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
