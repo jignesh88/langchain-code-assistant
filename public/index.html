@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Assistant</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Code Assistant</h1>
+      <p>Ask questions about your codebase</p>
+    </header>
+    
+    <main>
+      <div id="chat-container">
+        <div id="messages">
+          <div class="message system">
+            Welcome to Code Assistant! Ask me anything about your codebase.
+          </div>
+        </div>
+        
+        <div id="input-area">
+          <form id="query-form">
+            <input type="text" id="query-input" placeholder="Ask a question..." autocomplete="off">
+            <button type="submit">Send</button>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const socket = io();
+      const form = document.getElementById('query-form');
+      const input = document.getElementById('query-input');
+      const messages = document.getElementById('messages');
+
+      // Handle form submission
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const query = input.value.trim();
+        
+        if (query) {
+          // Add user message to UI
+          addMessage('user', query);
+          
+          // Show typing indicator
+          showTypingIndicator();
+          
+          // Send query to server
+          socket.emit('query', query);
+          
+          // Clear input
+          input.value = '';
+        }
+      });
+
+      // Handle messages from server
+      socket.on('message', (message) => {
+        if (message.role !== 'system' || message.content !== 'Processing your query...') {
+          removeTypingIndicator();
+          addMessage(message.role, message.content);
+        }
+        scrollToBottom();
+      });
+
+      // Show typing indicator
+      function showTypingIndicator() {
+        const typingDiv = document.createElement('div');
+        typingDiv.classList.add('message', 'assistant', 'typing');
+        typingDiv.id = 'typing-indicator';
+        typingDiv.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+        messages.appendChild(typingDiv);
+        scrollToBottom();
+      }
+
+      // Remove typing indicator
+      function removeTypingIndicator() {
+        const typingIndicator = document.getElementById('typing-indicator');
+        if (typingIndicator) {
+          typingIndicator.remove();
+        }
+      }
+
+      // Add message to UI
+      function addMessage(role, content) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', role);
+        
+        // Support for markdown-like formatting in responses
+        if (role === 'assistant' || role === 'system') {
+          // Basic markdown processing (bold, italic, code)
+          content = content
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/`(.*?)`/g, '<code>$1</code>')
+            .replace(/\n\n/g, '<br><br>')
+            .replace(/\n/g, '<br>');
+        }
+        
+        messageDiv.innerHTML = content;
+        messages.appendChild(messageDiv);
+        scrollToBottom();
+      }
+
+      // Scroll to bottom of message container
+      function scrollToBottom() {
+        messages.scrollTop = messages.scrollHeight;
+      }
+    });
+  </script>
+</body>
+</html>
